@@ -15,9 +15,10 @@ Defaults:
   --portal       epic_sandbox
 
 data-dir layout (all gitignored by default):
-  .client_id            # required; Epic-issued client_id, one line
-  tokens/<portal>.json  # auto-created; OAuth tokens
-  certs/                # auto-created; self-signed TLS cert for loopback
+  .client_id                 # Epic-issued client_id, one line (the default)
+  .client_id.<portal_name>   # optional per-portal override (e.g. .client_id.epic_sandbox)
+  tokens/<portal>.json       # auto-created; OAuth tokens
+  certs/                     # auto-created; self-signed TLS cert for loopback
 """
 import argparse
 import base64
@@ -93,14 +94,22 @@ RESOURCE_QUERIES = {
 }
 
 
-def read_client_id(data_dir):
-    p = data_dir / ".client_id"
-    if not p.exists():
-        sys.exit(f"[err] {p} not found. Create it with your Epic client_id (one line).")
-    cid = p.read_text().strip()
-    if not cid:
-        sys.exit(f"[err] {p} is empty.")
-    return cid
+def read_client_id(data_dir, portal_key):
+    # Per-portal override wins if present; fall back to generic .client_id.
+    # Typical setup: .client_id = production ID (works across Epic community
+    # members via USCDI distribution); .client_id.epic_sandbox = sandbox ID.
+    specific = data_dir / f".client_id.{portal_key}"
+    generic = data_dir / ".client_id"
+    for p in (specific, generic):
+        if p.exists():
+            cid = p.read_text().strip()
+            if not cid:
+                sys.exit(f"[err] {p} is empty.")
+            return cid
+    sys.exit(
+        f"[err] No client_id file found in {data_dir}. "
+        f"Create either {generic} or {specific} with your Epic client_id (one line)."
+    )
 
 
 def ensure_cert(cert_dir):
@@ -133,7 +142,7 @@ def pkce_pair():
 
 
 def auth(portal_key, data_dir):
-    client_id = read_client_id(data_dir)
+    client_id = read_client_id(data_dir, portal_key)
     cert_dir = data_dir / "certs"
     token_dir = data_dir / "tokens"
     portal = PORTALS[portal_key]

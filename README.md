@@ -48,13 +48,22 @@ During registration, use these values:
 
 **2. Set up a data directory.**
 
-Pick a directory on your machine to hold your config, tokens, and exports. Save your Epic-issued client_id to `.client_id` in that directory (just the UUID, one line, nothing else):
+Pick a directory on your machine to hold your config, tokens, and exports. Save your Epic-issued production `client_id` to `.client_id` in that directory (just the UUID, one line, nothing else):
 
 ```bash
 mkdir -p ~/my-health-data
-echo "YOUR-EPIC-CLIENT-ID-HERE" > ~/my-health-data/.client_id
+echo "YOUR-PRODUCTION-CLIENT-ID" > ~/my-health-data/.client_id
 chmod 600 ~/my-health-data/.client_id
 ```
+
+If you also want to test against the Epic sandbox (which uses a separate, non-production `client_id` issued by the same app registration), drop that into a per-portal override file:
+
+```bash
+echo "YOUR-SANDBOX-CLIENT-ID" > ~/my-health-data/.client_id.epic_sandbox
+chmod 600 ~/my-health-data/.client_id.epic_sandbox
+```
+
+At runtime the client uses `.client_id.<portal_name>` if it exists, else falls back to `.client_id`. So `.client_id` = production (works across any Epic customer via USCDI distribution), `.client_id.epic_sandbox` = sandbox-only override.
 
 **3. Authenticate against a portal.**
 

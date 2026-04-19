@@ -47,6 +47,25 @@ PORTALS = {
         "token_url": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
         "fhir_base": "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
     },
+    "mgb": {
+        "name": "Mass General Brigham",
+        "authorize_url": "https://ws-interconnect-fhir.partners.org/Interconnect-FHIR-MU-PRD/oauth2/authorize",
+        "token_url": "https://ws-interconnect-fhir.partners.org/Interconnect-FHIR-MU-PRD/oauth2/token",
+        "fhir_base": "https://ws-interconnect-fhir.partners.org/Interconnect-FHIR-MU-PRD/api/FHIR/R4",
+    },
+    "bidmc": {
+        # BIDMC data is served through Beth Israel Lahey Health's shared FHIR endpoint.
+        "name": "Beth Israel Deaconess / Beth Israel Lahey Health",
+        "authorize_url": "https://fhir.laheyhealth.org/proxy-prd-fhir/oauth2/authorize",
+        "token_url": "https://fhir.laheyhealth.org/proxy-prd-fhir/oauth2/token",
+        "fhir_base": "https://fhir.laheyhealth.org/proxy-prd-fhir/api/FHIR/R4",
+    },
+    "mount_auburn": {
+        "name": "Mount Auburn Hospital",
+        "authorize_url": "https://fhir.mah.org/prd-fhir/oauth2/authorize",
+        "token_url": "https://fhir.mah.org/prd-fhir/oauth2/token",
+        "fhir_base": "https://fhir.mah.org/prd-fhir/api/FHIR/R4",
+    },
 }
 
 SCOPES = " ".join([

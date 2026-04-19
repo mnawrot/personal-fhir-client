@@ -24,7 +24,68 @@ Patients with complex medical histories often receive care across multiple unaff
 
 ## Status
 
-In development. Built by one individual for their own longitudinal health tracking.
+In development. Built by one individual for their own longitudinal health tracking, but usable by anyone willing to register their own Epic developer app.
+
+## Getting started
+
+**Requirements:** Python 3.9+ (stdlib only — no `pip install` needed), `openssl` on `PATH` (macOS and most Linux distros have it).
+
+**1. Register your own app with Epic.**
+
+Go to https://fhir.epic.com/Developer/Apps and register a patient-facing SMART on FHIR app. Epic will issue you a `client_id`. This client is per-user — you need your own; you cannot use someone else's.
+
+During registration, use these values:
+
+- **Application Audience:** Patients
+- **SMART on FHIR Version:** R4
+- **SMART Scope Version:** v1
+- **FHIR ID Generation Scheme:** Use Unconstrained FHIR IDs
+- **Is Confidential Client:** No
+- **Can Register Dynamic Clients:** No
+- **Automatic Client Distribution:** USCDI v3
+- **Redirect URI:** `https://127.0.0.1:8765/smart/callback`
+- **Incoming APIs:** select all `(R4)` Read/Search variants for the resources you care about
+
+**2. Set up a data directory.**
+
+Pick a directory on your machine to hold your config, tokens, and exports. Save your Epic-issued client_id to `.client_id` in that directory (just the UUID, one line, nothing else):
+
+```bash
+mkdir -p ~/my-health-data
+echo "YOUR-EPIC-CLIENT-ID-HERE" > ~/my-health-data/.client_id
+chmod 600 ~/my-health-data/.client_id
+```
+
+**3. Authenticate against a portal.**
+
+```bash
+python3 /path/to/client.py auth --data-dir ~/my-health-data
+```
+
+Your browser opens to the portal's OAuth page. Log in with your MyChart credentials, approve the scopes, and get redirected to `https://127.0.0.1:8765/...`. The browser will warn about a self-signed cert for `127.0.0.1` — click through once ("Advanced → Proceed to 127.0.0.1 (unsafe)"). Tokens are saved to `~/my-health-data/tokens/<portal>.json`.
+
+**4. Pull your FHIR resources.**
+
+```bash
+python3 /path/to/client.py sync --data-dir ~/my-health-data
+```
+
+This writes JSON files per resource type to `~/my-health-data/exports/<portal>/`. Override the destination with `--exports-dir`.
+
+**Default portal** is `epic_sandbox` (Epic's public test endpoint with fake patients like `fhircamila / epicepic1`). Add your real portals by editing the `PORTALS` dict near the top of `client.py`.
+
+## Command reference
+
+```
+python3 client.py auth [--data-dir DIR] [--portal NAME]
+python3 client.py sync [--data-dir DIR] [--exports-dir DIR] [--portal NAME]
+```
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--data-dir` | cwd | Directory holding `.client_id`, `tokens/`, `certs/` |
+| `--exports-dir` | `<data-dir>/exports` | Where FHIR JSON is written on sync |
+| `--portal` | `epic_sandbox` | Which entry from `PORTALS` to use |
 
 ## Privacy and security
 
@@ -34,4 +95,4 @@ In development. Built by one individual for their own longitudinal health tracki
 
 ## License
 
-TBD.
+[MIT](LICENSE).

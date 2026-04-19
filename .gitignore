@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Never commit: client credentials, OAuth tokens, TLS keys, retrieved records
+.client_id
+tokens/
+certs/
+exports/

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Personal FHIR Client — OAuth redirect</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 40em; margin: 3em auto; padding: 0 1em; line-height: 1.5; color: #222; }
+    code { background: #f4f4f4; padding: 0.1em 0.4em; border-radius: 3px; }
+    .box { background: #f9f9f9; border: 1px solid #ddd; padding: 1em; border-radius: 6px; margin-top: 1.5em; }
+    a { color: #0366d6; }
+  </style>
+</head>
+<body>
+  <h2>Forwarding to your local Personal FHIR Client…</h2>
+  <p>This page is a static redirect shim. Some health-plan and EHR developer portals (e.g. BCBS, Cerner) require a public HTTPS redirect URI and won't accept the <code>127.0.0.1</code> loopback that RFC 8252 recommends for native apps. This page forwards the OAuth authorization code from that public URL back to your local app listener at <code>https://127.0.0.1:8765/smart/callback</code>.</p>
+  <p>If your browser doesn't redirect automatically in a moment, click:</p>
+  <div class="box">
+    <a id="fallback" href="#">Continue to local app</a>
+  </div>
+  <script>
+    (function () {
+      var target = "https://127.0.0.1:8765/smart/callback"
+        + (window.location.search || "")
+        + (window.location.hash || "");
+      document.getElementById("fallback").href = target;
+      // Small delay so the user sees the page before the redirect fires.
+      setTimeout(function () { window.location.replace(target); }, 600);
+    })();
+  </script>
+  <p style="margin-top:3em; font-size:0.85em; color:#666;">
+    Source: <a href="https://github.com/mnawrot/personal-fhir-client">mnawrot/personal-fhir-client</a>. This page contains no tracking and stores no data. The OAuth code is in the URL and is relayed to your local machine only.
+  </p>
+</body>
+</html>
